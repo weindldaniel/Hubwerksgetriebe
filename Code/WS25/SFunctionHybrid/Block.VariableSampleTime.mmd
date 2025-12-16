@@ -1,0 +1,26 @@
+classDiagram
+    direction TB
+
+    class VariableSampleTime {
+        Offset : double
+    }
+
+    class Block {
+        <<Abstract>>
+    }
+
+    class VariableSampleTimeBlock {
+    }
+
+    class VariableZeroOrderHoldBlock {
+        StartValue : double
+    }
+
+    Block <|-- VariableSampleTimeBlock
+    Block <|-- VariableZeroOrderHoldBlock
+
+    VariableSampleTimeBlock *-- "1" VariableSampleTime
+    VariableZeroOrderHoldBlock *-- "1" VariableSampleTime
+
+    style VariableSampleTime fill:white
+    style Block fill:white

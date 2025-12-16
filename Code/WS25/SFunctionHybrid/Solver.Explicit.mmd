@@ -1,0 +1,17 @@
+classDiagram
+
+    direction TB
+
+    class Solver {
+        <<Abstract>>
+    }
+
+    class EulerExplicitSolver {
+        Solve(timeStepMax : double, timeMax : double) void
+
+        CalculateOutputs(...) void
+    }
+
+    Solver <|-- EulerExplicitSolver
+
+    style Solver fill:white

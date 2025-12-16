@@ -1,0 +1,38 @@
+classDiagram
+
+    direction LR
+
+    class Model {
+    }
+
+    class Solver {
+        <<Abstract>>
+        Model : Model
+        ZeroCrossingValueThreshold : double
+        ZeroCrossingIterationCountLimit : int
+        ContinuousStates : Dictionary~Block, double[]~
+        DiscreteStates : Dictionary~Block, double[]~
+        Derivatives : Dictionary~Block, double[]~
+        Inputs : Dictionary~Block, double[]~
+        Outputs : Dictionary~Block, double[]~
+        ZeroCrossings : Dictionary~Block, double[]~
+        InputReadyFlags : Dictionary~Block, bool[]~
+        ContinuousStatesPrevious : Dictionary~Block, double[]~
+        DiscreteStatesPrevious : Dictionary~Block, double[]~
+        ZeroCrossingsPrevious : Dictionary~Block, double[]~
+        Solve(smax : double, tmax : double) void
+        InitializeStates() void
+        ResetFlags() void
+        AreAllInputsReady(block : Block) bool
+        CalculateOutputs(time : double) void
+        ForwardOutputs(block : Block) bool 
+        CalculateDerivatives(time : doube) void
+        CalculateZeroCrossings(time : double) double
+        IntegrateContinuousStates(timeStep : double) void
+        RememberInternalVariables() void
+        RestoreInternalVariables() void
+    }
+
+    Model "1" --* Solver
+
+    style Model fill:white

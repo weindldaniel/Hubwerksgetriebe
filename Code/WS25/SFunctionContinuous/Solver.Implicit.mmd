@@ -1,0 +1,23 @@
+classDiagram
+
+    direction TB
+
+    class Solver {
+        <<Abstract>>
+    }
+
+    class EulerImplicitSolver {
+        ContinuousStatesPrevious : Dictionary~Block, double[]~
+
+        ImplicitErrorThreshold : double
+        ImplicitIterationCountLimit : int
+        ImplicitLearningRate : double
+
+        Solve(timeStep : double, timeLimit : double) void
+
+        CalculateOutputs(time : double) void
+    }
+
+    Solver <|-- EulerImplicitSolver
+
+    style Solver fill:white

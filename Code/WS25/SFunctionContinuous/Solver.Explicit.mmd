@@ -1,0 +1,17 @@
+classDiagram
+
+    direction TB
+
+    class Solver {
+        <<Abstract>>
+    }
+
+    class EulerExplicitSolver {
+        Solve(timeStep : double, timeLimit : double) void
+
+        CalculateOutputs(time : double) void
+    }
+
+    Solver <|-- EulerExplicitSolver
+
+    style Solver fill:white
