@@ -54,9 +54,10 @@ namespace Hubwerksgetriebe
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.LoadIdentity();
 
-            gl.Translate(0, 0, -12);
-            gl.Rotate(_rotation, 0, 1, 0);
-            
+            gl.Translate(0, 0, -25);
+            //gl.Rotate(_rotation, 0, 1, 0);
+            gl.Rotate(-30,0,1,0);
+            gl.Rotate(-10,0,0,1);
             // ---------- Fadenkreuz ----------
             gl.Disable(OpenGL.GL_LIGHTING);
 
@@ -115,8 +116,8 @@ namespace Hubwerksgetriebe
             double x3 = 4; 
             double x4 = 8;
 
-            double z3 = -1;
-            double z45 = -2;
+            double z3 = 1;
+            double z45 = 2;
             // ---------------- Rolle 1 ----------------
             SetMaterial(gl, 0.6f, 0.6f, 0.6f);
             DrawDiskXY(gl, r2, thickness, segments, x2, 0, 0);
@@ -136,19 +137,27 @@ namespace Hubwerksgetriebe
             gl.Color(0, 0, 0);
             gl.LineWidth(3);
 
-            double ropeTopY = -r45;
+            double ropeTopY = 0;
             double ropeBottomY = -4.5;
 
-            gl.Begin(OpenGL.GL_LINES);
-            gl.Vertex(x3, ropeTopY, 0);
-            gl.Vertex(x3, ropeBottomY, 0);
-            gl.End();
+            // gl.Begin(OpenGL.GL_LINES);
+            // gl.Vertex(9.5, ropeTopY, 0);
+            // gl.Vertex(9.5, ropeBottomY, 0);
+            // gl.End();
 
+            double ropeZ = 2;   // Verschiebung in Z-Richtung
+
+            gl.Begin(OpenGL.GL_LINES);
+            gl.Vertex(9.5, ropeTopY, ropeZ);
+            gl.Vertex(9.5, ropeBottomY, ropeZ);
+            gl.End();
+            
+            
             gl.Enable(OpenGL.GL_LIGHTING);
 
             // ---------------- Punktmasse ----------------
             SetMaterial(gl, 0, 0, 0);
-            DrawSphere(gl, 0.4, 30, 30, x3, ropeBottomY - 0.4, 0);
+            DrawSphere(gl, 0.5, 30, 30, 9.5, ropeBottomY - 0.4, 2);
 
             _rotation += 0.5f;
         }
