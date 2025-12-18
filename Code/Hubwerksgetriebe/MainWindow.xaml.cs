@@ -10,7 +10,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SharpGL;
 
-
 namespace Hubwerksgetriebe
 {
     /// <summary>
@@ -29,197 +28,203 @@ namespace Hubwerksgetriebe
         {
             OpenGL gl = args.OpenGL;
 
-            // Hintergrundfarbe
             gl.ClearColor(1, 1, 1, 1);
 
-            // Lichtsystem
+            gl.Enable(OpenGL.GL_DEPTH_TEST);
             gl.Enable(OpenGL.GL_LIGHTING);
+            gl.Enable(OpenGL.GL_LIGHT0);
+            gl.Enable(OpenGL.GL_NORMALIZE);
 
-            // Umgebungslicht
             float[] ambient = { 0.2f, 0.2f, 0.2f, 1 };
-
             gl.LightModel(OpenGL.GL_LIGHT_MODEL_AMBIENT, ambient);
 
-            // Punktlicht
-            gl.Enable(OpenGL.GL_LIGHT0);
-
-            float[] position = { 0, 0, 0, 1 };
             float[] diffuse = { 1, 1, 1, 1 };
             float[] specular = { 1, 1, 1, 1 };
+            float[] position = { 3, 4, 6, 1 };
 
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, position);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, diffuse);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, specular);
-
-            // Schattierungsmodell
-            gl.ShadeModel(OpenGL.GL_SMOOTH);
-
-            // Tiefentest
-            gl.Enable(OpenGL.GL_DEPTH_TEST);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, position);
         }
 
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.WPF.OpenGLRoutedEventArgs args)
         {
             OpenGL gl = args.OpenGL;
 
-            #region DECLARATIONS & BEGINNING
-            // Puffer löschen
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.LoadIdentity();
 
-            // Kamera zurücksetzen
-            gl.Translate(0.0f, 0.0f, -9.0f);
+            gl.Translate(0, 0, -12);
+            gl.Rotate(_rotation, 0, 1, 0);
+            
+            // ---------- Fadenkreuz ----------
+            gl.Disable(OpenGL.GL_LIGHTING);
 
-            // Szene leicht rotieren
-            gl.Rotate(_rotation, 1.0f, 1.0f, 0.0f);
-
-            // Fadenkreuz zeichnen
             gl.Color(0.0f, 0.0f, 0.0f);
             gl.LineWidth(2.0f);
+
             gl.Begin(OpenGL.GL_LINES);
+            
+            // X-Achse
             gl.Vertex(-10.0f, 0.0f, 0.0f);
             gl.Vertex(10.0f, 0.0f, 0.0f);
+
+            // Y-Achse
             gl.Vertex(0.0f, -10.0f, 0.0f);
             gl.Vertex(0.0f, 10.0f, 0.0f);
+
+            // Z-Achse (in die Tiefe)
+            gl.Vertex(0.0f, 0.0f, -10.0f);
+            gl.Vertex(0.0f, 0.0f, 10.0f);
             gl.End();
-
-            // Materialeigenschaften für große Kugel
-            float[] mat_ambient = { 0.2f, 0.2f, 0.2f, 1.0f };
-            float[] mat_diffuse = { 0.4f, 0.6f, 0.9f, 1.0f };
-            float[] mat_specular = { 1.0f, 1.0f, 1.0f, 1.0f };
-            float[] mat_shininess = { 50.0f };
-
-            gl.Material(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_AMBIENT, mat_ambient);
-            gl.Material(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_DIFFUSE, mat_diffuse);
-            gl.Material(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_SPECULAR, mat_specular);
-            gl.Material(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_SHININESS, mat_shininess);
-
-            // Lichtquelle
-            float[] light_position = { 2.0f, 3.0f, 4.0f, 1.0f };
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, light_position);
-            #endregion
-
-            // Kugelparameter
-            double radius = 1.5;
-            int slices = 50;
-            int stacks = 50;
-
-            gl.ShadeModel(OpenGL.GL_SMOOTH);
-            gl.Enable(OpenGL.GL_LIGHTING);
-            gl.Enable(OpenGL.GL_LIGHT0);
-            gl.Enable(OpenGL.GL_NORMALIZE);
-
-            // ---------- Große Kugel ----------
-            for (int j = 0; j < stacks; j++)
-            {
-                double phi1 = j * Math.PI / stacks;
-                double phi2 = (j + 1) * Math.PI / stacks;
-
-                gl.Begin(OpenGL.GL_QUAD_STRIP);
-                for (int i = 0; i <= slices; i++)
-                {
-                    double theta = i * 2.0 * Math.PI / slices;
-
-                    double x1 = Math.Sin(phi1) * Math.Cos(theta);
-                    double y1 = Math.Cos(phi1);
-                    double z1 = Math.Sin(phi1) * Math.Sin(theta);
-
-                    double x2 = Math.Sin(phi2) * Math.Cos(theta);
-                    double y2 = Math.Cos(phi2);
-                    double z2 = Math.Sin(phi2) * Math.Sin(theta);
-
-                    gl.Normal(x1, y1, z1);
-                    gl.Vertex(radius * x1, radius * y1, radius * z1);
-
-                    gl.Normal(x2, y2, z2);
-                    gl.Vertex(radius * x2, radius * y2, radius * z2);
-                }
-                gl.End();
-            }
             
-            // ---------------- Scheibe ----------------
-            double diskRadius = 3;
-            double diskThickness = 0.15;
-            double diskY = -0.8;
-            double diskZ = radius + 0.2;
-            int diskSegments = 60;
+            // ---------- Achsenbeschriftung ----------
+            gl.DrawText(
+                10, 10,              // Screen-Koordinaten (px)
+                0.0f, 0.0f, 0.0f,    // Farbe
+                "Arial",
+                12,
+                "X →"
+            );
+            gl.DrawText(
+                10, 30,
+                0.0f, 0.0f, 0.0f,
+                "Arial",
+                12,
+                "Y ↑"
+            );
+            gl.DrawText(
+                10, 50,
+                0.0f, 0.0f, 0.0f,
+                "Arial",
+                12,
+                "Z ⊙"
+            );
 
-            // obere Fläche
-            gl.Begin(OpenGL.GL_TRIANGLE_FAN);
-            gl.Normal(0, 1, 0);
-            gl.Vertex(0, diskY + diskThickness / 2, diskZ);
-            for (int i = 0; i <= diskSegments; i++)
-            {
-                double t = i * 2 * Math.PI / diskSegments;
-                gl.Vertex(
-                    diskRadius * Math.Cos(t),
-                    diskY + diskThickness / 2,
-                    diskZ + diskRadius * Math.Sin(t)
-                );
-            }
+            gl.Enable(OpenGL.GL_LIGHTING);
+            // ---------------- Rollenparameter ----------------
+            double r2 = 1;
+            double r32 = 3;
+            double r34 = 1.5;
+            double r43 = 2.5;
+            double r45 = 1.5;
+            
+            double thickness = 1;
+            int segments = 60;
+            double x2 = 0;
+            double x3 = 4; 
+            double x4 = 8;
+
+            double z3 = -1;
+            double z45 = -2;
+            // ---------------- Rolle 1 ----------------
+            SetMaterial(gl, 0.6f, 0.6f, 0.6f);
+            DrawDiskXY(gl, r2, thickness, segments, x2, 0, 0);
+        
+            // ---------------- Rolle 2 ----------------
+            SetMaterial(gl, 0.4f, 0.6f, 0.9f);
+            DrawDiskXY(gl, r32, thickness, segments, x3, 0, 0);
+            DrawDiskXY(gl, r34, thickness, segments, x3, 0, z3);
+            
+            // ---------------- Rolle 3 ----------------
+            SetMaterial(gl, 0.7f, 0.4f, 0.4f);
+            DrawDiskXY(gl, r43, thickness, segments, x4, 0, z3);
+            DrawDiskXY(gl, r45, thickness, segments, x4, 0, z45);
+
+            // ---------------- Seil ----------------
+            gl.Disable(OpenGL.GL_LIGHTING);
+            gl.Color(0, 0, 0);
+            gl.LineWidth(3);
+
+            double ropeTopY = -r45;
+            double ropeBottomY = -4.5;
+
+            gl.Begin(OpenGL.GL_LINES);
+            gl.Vertex(x3, ropeTopY, 0);
+            gl.Vertex(x3, ropeBottomY, 0);
             gl.End();
 
-            // untere Fläche
-            gl.Begin(OpenGL.GL_TRIANGLE_FAN);
-            gl.Normal(0, -1, 0);
-            gl.Vertex(0, diskY - diskThickness / 2, diskZ);
-            for (int i = 0; i <= diskSegments; i++)
-            {
-                double t = -i * 2 * Math.PI / diskSegments;
-                gl.Vertex(
-                    diskRadius * Math.Cos(t),
-                    diskY - diskThickness / 2,
-                    diskZ + diskRadius * Math.Sin(t)
-                );
-            }
-            gl.End();
+            gl.Enable(OpenGL.GL_LIGHTING);
 
-            // Mantel
-            gl.Begin(OpenGL.GL_QUAD_STRIP);
-            for (int i = 0; i <= diskSegments; i++)
-            {
-                double t = i * 2 * Math.PI / diskSegments;
-                double nx = Math.Cos(t);
-                double nz = Math.Sin(t);
+            // ---------------- Punktmasse ----------------
+            SetMaterial(gl, 0, 0, 0);
+            DrawSphere(gl, 0.4, 30, 30, x3, ropeBottomY - 0.4, 0);
 
-                gl.Normal(nx, 0, nz);
-                gl.Vertex(
-                    diskRadius * nx,
-                    diskY + diskThickness / 2,
-                    diskZ + diskRadius * nz
-                );
-                gl.Vertex(
-                    diskRadius * nx,
-                    diskY - diskThickness / 2,
-                    diskZ + diskRadius * nz
-                );
-            }
-
-            gl.End();
-
-            _rotation += 0.8f;
+            _rotation += 0.5f;
         }
 
-        // Hilfsmethode für Kugel
+        // ================= Hilfsmethoden =================
+
+        private void DrawDiskXY(OpenGL gl, double radius, double thickness, int segments,
+            double cx, double cy, double cz)
+        {
+            double zFront = cz + thickness / 2.0;
+            double zBack  = cz - thickness / 2.0;
+
+            // ---------- Vorderfläche (+Z) ----------
+            gl.Begin(OpenGL.GL_TRIANGLE_FAN);
+            gl.Normal(0, 0, 1);
+            gl.Vertex(cx, cy, zFront);
+
+            for (int i = 0; i <= segments; i++)
+            {
+                double t = i * 2.0 * Math.PI / segments;
+                double x = radius * Math.Cos(t);
+                double y = radius * Math.Sin(t);
+
+                gl.Vertex(cx + x, cy + y, zFront);
+            }
+            gl.End();
+
+            // ---------- Rückfläche (-Z) ----------
+            gl.Begin(OpenGL.GL_TRIANGLE_FAN);
+            gl.Normal(0, 0, -1);
+            gl.Vertex(cx, cy, zBack);
+
+            for (int i = 0; i <= segments; i++)
+            {
+                double t = -i * 2.0 * Math.PI / segments;
+                double x = radius * Math.Cos(t);
+                double y = radius * Math.Sin(t);
+
+                gl.Vertex(cx + x, cy + y, zBack);
+            }
+            gl.End();
+
+            // ---------- Mantel ----------
+            gl.Begin(OpenGL.GL_QUAD_STRIP);
+            for (int i = 0; i <= segments; i++)
+            {
+                double t = i * 2.0 * Math.PI / segments;
+                double nx = Math.Cos(t);
+                double ny = Math.Sin(t);
+
+                gl.Normal(nx, ny, 0);
+                gl.Vertex(cx + radius * nx, cy + radius * ny, zFront);
+                gl.Vertex(cx + radius * nx, cy + radius * ny, zBack);
+            }
+            gl.End();
+        }
+        
         private void DrawSphere(OpenGL gl, double radius, int slices, int stacks, double cx, double cy, double cz)
         {
             for (int j = 0; j < stacks; j++)
             {
-                double phi1 = j * Math.PI / stacks;
-                double phi2 = (j + 1) * Math.PI / stacks;
+                double p1 = j * Math.PI / stacks;
+                double p2 = (j + 1) * Math.PI / stacks;
 
                 gl.Begin(OpenGL.GL_QUAD_STRIP);
                 for (int i = 0; i <= slices; i++)
                 {
-                    double theta = i * 2.0 * Math.PI / slices;
+                    double t = i * 2 * Math.PI / slices;
 
-                    double x1 = Math.Sin(phi1) * Math.Cos(theta);
-                    double y1 = Math.Cos(phi1);
-                    double z1 = Math.Sin(phi1) * Math.Sin(theta);
+                    double x1 = Math.Sin(p1) * Math.Cos(t);
+                    double y1 = Math.Cos(p1);
+                    double z1 = Math.Sin(p1) * Math.Sin(t);
 
-                    double x2 = Math.Sin(phi2) * Math.Cos(theta);
-                    double y2 = Math.Cos(phi2);
-                    double z2 = Math.Sin(phi2) * Math.Sin(theta);
+                    double x2 = Math.Sin(p2) * Math.Cos(t);
+                    double y2 = Math.Cos(p2);
+                    double z2 = Math.Sin(p2) * Math.Sin(t);
 
                     gl.Normal(x1, y1, z1);
                     gl.Vertex(cx + radius * x1, cy + radius * y1, cz + radius * z1);
@@ -230,6 +235,18 @@ namespace Hubwerksgetriebe
                 gl.End();
             }
         }
-    }
 
-}
+        private void SetMaterial(OpenGL gl, float r, float g, float b)
+        {
+            float[] amb = { 0.2f, 0.2f, 0.2f, 1 };
+            float[] diff = { r, g, b, 1 };
+            float[] spec = { 1, 1, 1, 1 };
+            float[] shin = { 50 };
+
+            gl.Material(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_AMBIENT, amb);
+            gl.Material(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_DIFFUSE, diff);
+            gl.Material(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_SPECULAR, spec);
+            gl.Material(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_SHININESS, shin);
+        }
+    }
+}    
