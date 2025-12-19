@@ -49,6 +49,12 @@ namespace Hubwerksgetriebe
             Green,
             Blue
         }
+
+        public enum DiskMarkerDirection
+        {
+            PositiveX,
+            NegativeX
+        }
         
         private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.WPF.OpenGLRoutedEventArgs args)
         {
@@ -84,28 +90,37 @@ namespace Hubwerksgetriebe
             
             // Kamera ausrichtung
             gl.Translate(0, 0, -25);
-            //gl.Rotate(20, 1, 0, 0);
-            //gl.Rotate(-40, 0, 1, 0);
+            gl.Rotate(20, 1, 0, 0);
+            gl.Rotate(-40, 0, 1, 0);
             DrawFadenkreuz(gl);
-             gl.Rotate(_rotation, 0, 1, 0);
+            //gl.Rotate(_rotation, 0, 1, 0);
             gl.Enable(OpenGL.GL_LIGHTING);
             
             // ---------------- Rolle 1 ----------------
             SetMaterial(gl, 0.6f, 0.6f, 0.6f);
-            DrawDiskXy(gl, _r2, _thickness, _segments, _x2, 0, 0);
-            DrawDiskMarkerXy(gl, _r2, _thickness, 0,0, DiskMarkerColor.Red);
-            
+            gl.PushMatrix();
+            gl.Translate(_x2, 0, 0);
+            gl.Rotate(_phi2 * 180.0 / Math.PI, 0, 0, 1);
+            DrawDiskXy_V2(gl,_r2,_thickness,_segments,_x2,0,0,DiskMarkerColor.Red,DiskMarkerDirection.PositiveX);
+            gl.PopMatrix();
             // ---------------- Rolle 2 ----------------
             SetMaterial(gl, 0.4f, 0.6f, 0.9f);
-            DrawDiskXy(gl, _r32, _thickness, _segments, _x3, 0, 0);
-            DrawDiskXy(gl, _r34, _thickness, _segments, _x3, 0, _z3);
-            DrawDiskMarkerXy(gl, _r32, _thickness, 0,0, DiskMarkerColor.Green);
-            DrawDiskMarkerXy(gl, _r34, _thickness, _r32,2, DiskMarkerColor.Blue);
+            
+            gl.PushMatrix();
+            gl.Translate(0, 0, 0);
+            gl.Rotate(phi3 * 180.0 / Math.PI, 0, 0, 1);
+            DrawDiskXy_V2(gl,_r32,_thickness,_segments,_x3,0,0,DiskMarkerColor.Red,DiskMarkerDirection.NegativeX);
+            DrawDiskXy_V2(gl,_r34,_thickness,_segments,_x3,0,_z3,DiskMarkerColor.Blue,DiskMarkerDirection.PositiveX);
+            gl.PopMatrix();
+            
             // ---------------- Rolle 3 ----------------
             SetMaterial(gl, 0.7f, 0.4f, 0.4f);
-            DrawDiskXy(gl, _r43, _thickness, _segments, _x4, 0, _z3);
-            DrawDiskXy(gl, _r45, _thickness, _segments, _x4, 0, _z45);
-            //DrawDiskMarkerXy(gl, _r43, _thickness, 0,0, DiskMarkerColor.Blue);
+            gl.PushMatrix();
+            gl.Translate(0, 0, 0);
+            gl.Rotate(phi4 * 180.0 / Math.PI, 0, 0, 1);
+            DrawDiskXy_V2(gl,_r43,_thickness,_segments,_x4,0,_z3,DiskMarkerColor.Blue,DiskMarkerDirection.NegativeX);
+            DrawDiskXy_V2(gl,_r45,_thickness,_segments,_x4,0,_z45,DiskMarkerColor.Green,DiskMarkerDirection.PositiveX);
+            gl.PopMatrix();
             // ---------------- Seil ----------------
             gl.Disable(OpenGL.GL_LIGHTING);
             gl.Color(0, 0, 0);
@@ -183,6 +198,72 @@ namespace Hubwerksgetriebe
             }
             gl.End();
         }
+        private void DrawDiskXy_V2(OpenGL gl, double radius, double thickness, int segments, double cx, double cy, double cz, DiskMarkerColor markerColor, DiskMarkerDirection markerDirection)
+        {
+            double zFront = cz + thickness / 2.0;
+            double zBack  = cz - thickness / 2.0;
+
+            // ================= Vorderfläche (+Z) =================
+            gl.Begin(OpenGL.GL_TRIANGLE_FAN);
+            gl.Normal(0, 0, 1);
+            gl.Vertex(cx, cy, zFront);
+
+            for (int i = 0; i <= segments; i++)
+            {
+                double t = i * 2.0 * Math.PI / segments;
+                gl.Vertex(
+                    cx + radius * Math.Cos(t),
+                    cy + radius * Math.Sin(t),
+                    zFront
+                );
+            }
+            gl.End();
+
+            // ================= Rückfläche (-Z) =================
+            gl.Begin(OpenGL.GL_TRIANGLE_FAN);
+            gl.Normal(0, 0, -1);
+            gl.Vertex(cx, cy, zBack);
+
+            for (int i = 0; i <= segments; i++)
+            {
+                double t = -i * 2.0 * Math.PI / segments;
+                gl.Vertex(
+                    cx + radius * Math.Cos(t),
+                    cy + radius * Math.Sin(t),
+                    zBack
+                );
+            }
+            gl.End();
+
+            // ================= Mantel =================
+            gl.Begin(OpenGL.GL_QUAD_STRIP);
+            for (int i = 0; i <= segments; i++)
+            {
+                double t = i * 2.0 * Math.PI / segments;
+                double nx = Math.Cos(t);
+                double ny = Math.Sin(t);
+
+                gl.Normal(nx, ny, 0);
+                gl.Vertex(cx + radius * nx, cy + radius * ny, zFront);
+                gl.Vertex(cx + radius * nx, cy + radius * ny, zBack);
+            }
+            gl.End();
+
+            // ================= Marker (vordere Stirnfläche) =================
+            gl.Disable(OpenGL.GL_LIGHTING);
+            gl.LineWidth(3.0f);
+            SetMarkerColor(gl, markerColor);
+
+            double dir = (markerDirection == DiskMarkerDirection.PositiveX) ? 1.0 : -1.0;
+            double zMarker = zFront + 0.001; // gegen Z-Fighting
+
+            gl.Begin(OpenGL.GL_LINES);
+            gl.Vertex(cx, cy, zMarker);
+            gl.Vertex(cx + dir * radius, cy, zMarker);
+            gl.End();
+
+            gl.Enable(OpenGL.GL_LIGHTING);
+        }
         private void SetMarkerColor(OpenGL gl, DiskMarkerColor color)
         {
             switch (color)
@@ -199,19 +280,6 @@ namespace Hubwerksgetriebe
                     gl.Color(0.0f, 0.0f, 1.0f);
                     break;
             }
-        }
-        private void DrawDiskMarkerXy(OpenGL gl, double radius, double thickness, double xOffset, double zOffset, DiskMarkerColor color)
-        {
-            double z = (thickness/2 + 0.1) +  zOffset;
-            gl.Disable(OpenGL.GL_LIGHTING);
-            gl.LineWidth(3.0f);
-            SetMarkerColor(gl, color);
-            gl.Begin(OpenGL.GL_LINES);
-            gl.Vertex(xOffset, 0.0, z);
-            gl.Vertex(radius + xOffset, 0.0, z);
-            gl.End();
-
-            gl.Enable(OpenGL.GL_LIGHTING);
         }
         private static void DrawSphere(OpenGL gl, double radius, int slices, int stacks, double cx, double cy, double cz)
         {
