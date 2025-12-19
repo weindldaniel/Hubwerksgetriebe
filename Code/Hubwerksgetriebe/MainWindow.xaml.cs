@@ -83,11 +83,10 @@ namespace Hubwerksgetriebe
         {
             OpenGL gl = args.OpenGL;
             double phi3 = _phi2 * (_r2 / _r32);
-            double phi4 = phi3 * (_r32 / _r43);
+            double phi4 = -(phi3 * (_r32 / _r43));
             
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.LoadIdentity();
-            
             
             // Kamera ausrichtung
             gl.Translate(0, 0, -25);
@@ -97,31 +96,38 @@ namespace Hubwerksgetriebe
             //gl.Rotate(_rotation, 0, 1, 0);
             gl.Enable(OpenGL.GL_LIGHTING);
             
-            // ---------------- Rolle 1 ----------------
+            // ---------------- Rolle 2 ----------------
             SetMaterial(gl, 0.6f, 0.6f, 0.6f);
             gl.PushMatrix();
             gl.Translate(_x2, 0, 0);
             gl.Rotate(_phi2 * 180.0 / Math.PI, 0, 0, 1);
-            DrawDiskXy_V2(gl,_r2,_thickness,_segments,_x2,0,0,DiskMarkerColor.Red,DiskMarkerDirection.PositiveX);
+            DrawDiskXy_V2(gl,_r2,_thickness,_segments,0,0,0,DiskMarkerColor.Red,DiskMarkerDirection.PositiveX);
             gl.PopMatrix();
-            // ---------------- Rolle 2 ----------------
+            // ---------------- Rolle 3.1 ----------------
             SetMaterial(gl, 0.4f, 0.6f, 0.9f);
-            
             gl.PushMatrix();
-            gl.Translate(0, 0, 0);
-            gl.Rotate(phi3 * 180.0 / Math.PI, 0, 0, 1);
-            DrawDiskXy_V2(gl,_r32,_thickness,_segments,_x3,0,0,DiskMarkerColor.Red,DiskMarkerDirection.NegativeX);
-            DrawDiskXy_V2(gl,_r34,_thickness,_segments,_x3,0,_z3,DiskMarkerColor.Blue,DiskMarkerDirection.PositiveX);
+            gl.Translate(_x3,0, 0);
+            gl.Rotate(phi3 * 180.0 / Math.PI, 0, 0, _x3);
+            DrawDiskXy_V2(gl,_r32,_thickness,_segments,0,0,0,DiskMarkerColor.Red,DiskMarkerDirection.NegativeX);
             gl.PopMatrix();
-            
-            
-            // ---------------- Rolle 3 ----------------
+            // ---------------- Rolle 3.2 ----------------
+            gl.PushMatrix();
+            gl.Translate(_x3,0, _z3);
+            gl.Rotate(phi3 * 180.0 / Math.PI, 0, 0, _x3);
+            DrawDiskXy_V2(gl,_r34,_thickness,_segments,0,0,0,DiskMarkerColor.Blue,DiskMarkerDirection.PositiveX);
+            gl.PopMatrix();
+            // ---------------- Rolle 4.1 ----------------
             SetMaterial(gl, 0.7f, 0.4f, 0.4f);
             gl.PushMatrix();
-            gl.Translate(0, 0, 0);
-            gl.Rotate(phi4 * 180.0 / Math.PI, 0, 0, 1);
-            DrawDiskXy_V2(gl,_r43,_thickness,_segments,_x4,0,_z3,DiskMarkerColor.Blue,DiskMarkerDirection.NegativeX);
-            DrawDiskXy_V2(gl,_r45,_thickness,_segments,_x4,0,_z45,DiskMarkerColor.Green,DiskMarkerDirection.PositiveX);
+            gl.Translate(_x4, 0, _z3);
+            gl.Rotate(phi4 * 180.0 / Math.PI, 0, 0, _x4);
+            DrawDiskXy_V2(gl,_r43,_thickness,_segments,0,0,0,DiskMarkerColor.Blue,DiskMarkerDirection.NegativeX);
+            gl.PopMatrix();
+            // ---------------- Rolle 4.2 ----------------
+            gl.PushMatrix();
+            gl.Translate(_x4, 0, _z45);
+            gl.Rotate(phi4 * 180.0 / Math.PI, 0, 0, _x4);
+            DrawDiskXy_V2(gl,_r45,_thickness,_segments,0,0,0,DiskMarkerColor.Green,DiskMarkerDirection.PositiveX);
             gl.PopMatrix();
             // ---------------- Seil ----------------
             gl.Disable(OpenGL.GL_LIGHTING);
