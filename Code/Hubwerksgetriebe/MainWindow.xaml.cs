@@ -113,6 +113,7 @@ namespace Hubwerksgetriebe
             DrawDiskXy_V2(gl,_r34,_thickness,_segments,_x3,0,_z3,DiskMarkerColor.Blue,DiskMarkerDirection.PositiveX);
             gl.PopMatrix();
             
+            
             // ---------------- Rolle 3 ----------------
             SetMaterial(gl, 0.7f, 0.4f, 0.4f);
             gl.PushMatrix();
