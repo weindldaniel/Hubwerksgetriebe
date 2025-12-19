@@ -88,6 +88,7 @@ namespace Hubwerksgetriebe
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.LoadIdentity();
             
+            
             // Kamera ausrichtung
             gl.Translate(0, 0, -25);
             gl.Rotate(20, 1, 0, 0);
