@@ -17,25 +17,28 @@ namespace Hubwerksgetriebe
     /// </summary>
     public partial class MainWindow : Window
     {
-        #region PRIVATE VARIABLES
+        #region PRIVATE MEMBERS
         private float _rotation = 0;
         // Rollenparameter
-        private double _r2 = 1;
-        private double _r32 = 3;
-        private double _r34 = 1.5;
-        private double _r43 = 2.5;
-        private double _r45 = 1.5;
-        private double _thickness = 1;
-        private int _segments = 60;
+        private double _r2 = 2;
+        private double _r32 = 5;
+        private double _r34 = 2;
+        private double _r43 = 4;
+        private double _r45 = 2;
+        private double _thickness2 = 2;
+        private double _thickness31 = 1;
+        private double _thickness32 = 2;
+        private double _thickness41 = 3;
+        private double _thickness42 = 4;
+        private int _segments = 50;
         // X & Z Positionen
         private double _x2 = 0;
-        private double _x3 = 4;
-        private double _x4 = 8;
         private double _z3 = 1;
         private double _z45 = 2;
         // Winkel
         private double _phi2 = 0.0; // [rad]
-
+        // Punktmaße & Seil
+        private double _ropeBaseY = -10;   // Ausgangsposition der Masse
         #endregion
         
         public MainWindow()
@@ -81,132 +84,92 @@ namespace Hubwerksgetriebe
 
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.WPF.OpenGLRoutedEventArgs args)
         {
-            OpenGL gl = args.OpenGL;
-            double phi3 = _phi2 * (_r2 / _r32);
-            double phi4 = -(phi3 * (_r32 / _r43));
+            #region DECLARATIONS 
+            // X & Z Positionen
+            double x3 = _r2 + _r32;
+            double x4 = _r2 + _r32 + _r34 + _r43 ;
+            // müssen noch berechnet werden für parametrischen aufbau
+            double z3;
+            double z45;
+            // Winkel
+            double phi3 = -_phi2 * (_r2 / _r32);
+            double phi4 = _phi2 * ((_r2 * _r34) / (_r32 * _r43));
+            // Rope 
+            double ropeDisplacement = _r45 * phi4;   // s = r * φ
+            double ropeY = _ropeBaseY + ropeDisplacement;
+            double ropeZ = _z45 + _thickness42 / 2.0; // vordere Stirnfläche
+            #endregion
             
+            #region OpenGL  settings
+            OpenGL gl = args.OpenGL;
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.LoadIdentity();
             
             // Kamera ausrichtung
-            gl.Translate(0, 0, -25);
+            gl.Translate(-5, 5, -30);
             gl.Rotate(20, 1, 0, 0);
-            gl.Rotate(-40, 0, 1, 0);
+            //gl.Rotate(-40, 0, 1, 0);
             DrawFadenkreuz(gl);
-            //gl.Rotate(_rotation, 0, 1, 0);
+            gl.Rotate(_rotation, 0, 1, 0);
             gl.Enable(OpenGL.GL_LIGHTING);
             
+            #endregion
+
+            #region Drawings
             // ---------------- Rolle 2 ----------------
-            SetMaterial(gl, 0.6f, 0.6f, 0.6f);
+            SetMaterial(gl, 0f, 0f, 0.5f);
             gl.PushMatrix();
             gl.Translate(_x2, 0, 0);
             gl.Rotate(_phi2 * 180.0 / Math.PI, 0, 0, 1);
-            DrawDiskXy_V2(gl,_r2,_thickness,_segments,0,0,0,DiskMarkerColor.Red,DiskMarkerDirection.PositiveX);
+            DrawDiskXy(gl,_r2,_thickness2,_segments,0,0,0,DiskMarkerColor.Red,DiskMarkerDirection.PositiveX);
             gl.PopMatrix();
             // ---------------- Rolle 3.1 ----------------
-            SetMaterial(gl, 0.4f, 0.6f, 0.9f);
+            SetMaterial(gl, 0f, 1f, 0f);
             gl.PushMatrix();
-            gl.Translate(_x3,0, 0);
-            gl.Rotate(phi3 * 180.0 / Math.PI, 0, 0, _x3);
-            DrawDiskXy_V2(gl,_r32,_thickness,_segments,0,0,0,DiskMarkerColor.Red,DiskMarkerDirection.NegativeX);
+            gl.Translate(x3,0, 0);
+            gl.Rotate(phi3 * 180.0 / Math.PI, 0, 0, x3);
+            DrawDiskXy(gl,_r32,_thickness31,_segments,0,0,0,DiskMarkerColor.Red,DiskMarkerDirection.NegativeX);
             gl.PopMatrix();
             // ---------------- Rolle 3.2 ----------------
             gl.PushMatrix();
-            gl.Translate(_x3,0, _z3);
-            gl.Rotate(phi3 * 180.0 / Math.PI, 0, 0, _x3);
-            DrawDiskXy_V2(gl,_r34,_thickness,_segments,0,0,0,DiskMarkerColor.Blue,DiskMarkerDirection.PositiveX);
+            gl.Translate(x3,0, _z3);
+            gl.Rotate(phi3 * 180.0 / Math.PI, 0, 0, x3);
+            DrawDiskXy(gl,_r34,_thickness32,_segments,0,0,0,DiskMarkerColor.Blue,DiskMarkerDirection.PositiveX);
             gl.PopMatrix();
             // ---------------- Rolle 4.1 ----------------
-            SetMaterial(gl, 0.7f, 0.4f, 0.4f);
+            SetMaterial(gl, 1f, 0f, 0f);
             gl.PushMatrix();
-            gl.Translate(_x4, 0, _z3);
-            gl.Rotate(phi4 * 180.0 / Math.PI, 0, 0, _x4);
-            DrawDiskXy_V2(gl,_r43,_thickness,_segments,0,0,0,DiskMarkerColor.Blue,DiskMarkerDirection.NegativeX);
+            gl.Translate(x4, 0, _z3);
+            gl.Rotate(phi4 * 180.0 / Math.PI, 0, 0, x4);
+            DrawDiskXy(gl,_r43,_thickness41,_segments,0,0,0,DiskMarkerColor.Blue,DiskMarkerDirection.NegativeX);
             gl.PopMatrix();
             // ---------------- Rolle 4.2 ----------------
             gl.PushMatrix();
-            gl.Translate(_x4, 0, _z45);
-            gl.Rotate(phi4 * 180.0 / Math.PI, 0, 0, _x4);
-            DrawDiskXy_V2(gl,_r45,_thickness,_segments,0,0,0,DiskMarkerColor.Green,DiskMarkerDirection.PositiveX);
+            gl.Translate(x4, 0, _z45);
+            gl.Rotate(phi4 * 180.0 / Math.PI, 0, 0, x4);
+            DrawDiskXy(gl,_r45,_thickness42,_segments,0,0,0,DiskMarkerColor.Green,DiskMarkerDirection.PositiveX);
             gl.PopMatrix();
             // ---------------- Seil ----------------
             gl.Disable(OpenGL.GL_LIGHTING);
             gl.Color(0, 0, 0);
-            gl.LineWidth(3);
-
-            double ropeTopY = 0;
-            double ropeBottomY = -4.5;
-            
-            double ropeZ = 2; // Verschiebung in Z-Richtung
-
+            gl.LineWidth(3.0f);
             gl.Begin(OpenGL.GL_LINES);
-            gl.Vertex(9.5, ropeTopY, ropeZ);
-            gl.Vertex(9.5, ropeBottomY, ropeZ);
+            gl.Vertex(x4+_r45, 0, ropeZ);   // Austritt an der Rolle
+            gl.Vertex(x4+_r45, ropeY, ropeZ);       // bewegte Masse
             gl.End();
-            
             gl.Enable(OpenGL.GL_LIGHTING);
-
             // ---------------- Punktmasse ----------------
             SetMaterial(gl, 0, 0, 0);
-            DrawSphere(gl, 0.5, 30, 30, 9.5, ropeBottomY - 0.4, 2);
-
-            _rotation += 0.5f;
-            _phi2 += 0.01; // rad pro Frame
+            DrawSphere(gl, 0.5, 30, 30, x4+_r45, ropeY - 0.4, ropeZ
+            );
+            #endregion
+            
+            _rotation -= 0.5f;
+            _phi2 += 0.05; // rad pro Frame
         }
 
         // ================= Hilfsmethoden =================
-        private static void DrawDiskXy(OpenGL gl, double radius, double thickness, int segments, double cx, double cy, double cz)
-        {
-            double zFront = cz + thickness / 2.0;
-            double zBack = cz - thickness / 2.0;
-
-            // ---------- Vorderfläche (+Z) ----------
-            gl.Begin(OpenGL.GL_TRIANGLE_FAN);
-            gl.Normal(0, 0, 1);
-            gl.Vertex(cx, cy, zFront);
-
-            for (int i = 0; i <= segments; i++)
-            {
-                double t = i * 2.0 * Math.PI / segments;
-                double x = radius * Math.Cos(t);
-                double y = radius * Math.Sin(t);
-
-                gl.Vertex(cx + x, cy + y, zFront);
-            }
-
-            gl.End();
-
-            // ---------- Rückfläche (-Z) ----------
-            gl.Begin(OpenGL.GL_TRIANGLE_FAN);
-            gl.Normal(0, 0, -1);
-            gl.Vertex(cx, cy, zBack);
-
-            for (int i = 0; i <= segments; i++)
-            {
-                double t = -i * 2.0 * Math.PI / segments;
-                double x = radius * Math.Cos(t);
-                double y = radius * Math.Sin(t);
-
-                gl.Vertex(cx + x, cy + y, zBack);
-            }
-
-            gl.End();
-
-            // ---------- Mantel ----------
-            gl.Begin(OpenGL.GL_QUAD_STRIP);
-            for (int i = 0; i <= segments; i++)
-            {
-                double t = i * 2.0 * Math.PI / segments;
-                double nx = Math.Cos(t);
-                double ny = Math.Sin(t);
-
-                gl.Normal(nx, ny, 0);
-                gl.Vertex(cx + radius * nx, cy + radius * ny, zFront);
-                gl.Vertex(cx + radius * nx, cy + radius * ny, zBack);
-            }
-            gl.End();
-        }
-        private void DrawDiskXy_V2(OpenGL gl, double radius, double thickness, int segments, double cx, double cy, double cz, DiskMarkerColor markerColor, DiskMarkerDirection markerDirection)
+        private void DrawDiskXy(OpenGL gl, double radius, double thickness, int segments, double cx, double cy, double cz, DiskMarkerColor markerColor, DiskMarkerDirection markerDirection)
         {
             double zFront = cz + thickness / 2.0;
             double zBack  = cz - thickness / 2.0;
