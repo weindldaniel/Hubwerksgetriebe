@@ -366,29 +366,53 @@ namespace Hubwerksgetriebe
             _phi2Sequence.Clear();
             _phi2Index = 0;
 
-            foreach (var line in File.ReadLines(filePath))
+            foreach (string rawLine in File.ReadLines(filePath))
             {
-                // Leere Zeilen überspringen
-                if (string.IsNullOrWhiteSpace(line))
+                if (string.IsNullOrWhiteSpace(rawLine))
                     continue;
 
-                // Header überspringen (falls vorhanden)
+                // BOM + Whitespaces entfernen
+                string line = rawLine
+                    .Trim()
+                    .TrimStart('\uFEFF');
+
+                // Kommentare / Header überspringen
+                if (line.StartsWith("#"))
+                    continue;
+
                 if (line.ToLower().Contains("phi"))
                     continue;
 
-                // Dezimalpunkt unabhängig vom System
+                // Falls mehrere Spalten → erste nehmen
+                string firstToken = line
+                    .Split(';', ',', '\t')
+                    .FirstOrDefault();
+
+                if (string.IsNullOrWhiteSpace(firstToken))
+                    continue;
+
+                // Dezimalnormalisierung
+                firstToken = firstToken.Replace(',', '.');
+
                 if (double.TryParse(
-                        line.Trim(),
+                        firstToken,
                         NumberStyles.Float,
                         CultureInfo.InvariantCulture,
                         out double value))
                 {
                     _phi2Sequence.Add(value);
                 }
+                else
+                {
+                    // 🔴 Debug-Hilfe (SEHR WICHTIG)
+                    System.Diagnostics.Debug.WriteLine(
+                        $"Parse fehlgeschlagen: '{firstToken}'");
+                }
             }
 
             if (_phi2Sequence.Count == 0)
-                throw new InvalidOperationException("CSV enthält keine gültigen phi2-Werte.");
+                throw new InvalidOperationException(
+                    "CSV enthält keine gültigen phi2-Werte.");
         }
         // Time Heartbeat
         private void PhiTimer_Tick(object sender, EventArgs e)
