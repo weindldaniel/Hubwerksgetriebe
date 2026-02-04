@@ -8,6 +8,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+using System.IO;
+using System.Globalization;
+using System.Windows.Threading;
 using SharpGL;
 
 namespace Hubwerksgetriebe
@@ -39,11 +43,24 @@ namespace Hubwerksgetriebe
         private double _phi2 = 0.0; // [rad]
         // Punktmaße & Seil
         private double _ropeBaseY = -10;   // Ausgangsposition der Masse
+        // DOF-Zeitreihe
+        private List<double> _phi2Sequence = new List<double>();
+        private int _phi2Index = 0;
+        private DispatcherTimer _phiTimer;
         #endregion
         
         public MainWindow()
         {
             InitializeComponent();
+
+            // CSV laden
+            LoadPhi2FromCsv(@"Z:\_source\Repositorys\SSI_Hubwerksgetriebe\phi2.csv");
+
+            // Timer starten
+            _phiTimer = new DispatcherTimer();
+            _phiTimer.Interval = TimeSpan.FromSeconds(0.1);
+            _phiTimer.Tick += PhiTimer_Tick;
+            _phiTimer.Start();
         }
         
         public enum DiskMarkerColor
@@ -81,10 +98,10 @@ namespace Hubwerksgetriebe
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, specular);
             gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, position);
         }
-
+        
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.WPF.OpenGLRoutedEventArgs args)
         {
-            #region DECLARATIONS 
+            #region DECLARATIONS
             // X & Z Positionen
             double x3 = _r2 + _r32;
             double x4 = _r2 + _r32 + _r34 + _r43 ;
@@ -97,7 +114,8 @@ namespace Hubwerksgetriebe
             // Rope 
             double ropeDisplacement = _r45 * phi4;   // s = r * φ
             double ropeY = _ropeBaseY + ropeDisplacement;
-            double ropeZ = _z45 + _thickness42 / 2.0; // vordere Stirnfläche
+            double ropeZ = _z45 + _thickness42 / 2.0; // vordere Stirnfläch
+                
             #endregion
             
             #region OpenGL  settings
@@ -108,9 +126,9 @@ namespace Hubwerksgetriebe
             // Kamera ausrichtung
             gl.Translate(-5, 5, -30);
             gl.Rotate(20, 1, 0, 0);
-            //gl.Rotate(-40, 0, 1, 0);
+            // gl.Rotate(-40, 0, 1, 0);
             DrawFadenkreuz(gl);
-            gl.Rotate(_rotation, 0, 1, 0);
+            // gl.Rotate(_rotation, 0, 1, 0);
             gl.Enable(OpenGL.GL_LIGHTING);
             
             #endregion
@@ -122,32 +140,33 @@ namespace Hubwerksgetriebe
             gl.Translate(_x2, 0, 0);
             gl.Rotate(_phi2 * 180.0 / Math.PI, 0, 0, 1);
             DrawDiskXy(gl,_r2,_thickness2,_segments,0,0,0,DiskMarkerColor.Red,DiskMarkerDirection.PositiveX);
+            //drawer.DrawDiskXy(gl, _r2, _thickness2, _segments, 0, 0, 0, DiskMarkerColor Red, DiskMarkerDirection.PositiveX);
             gl.PopMatrix();
             // ---------------- Rolle 3.1 ----------------
             SetMaterial(gl, 0f, 1f, 0f);
             gl.PushMatrix();
             gl.Translate(x3,0, 0);
-            gl.Rotate(phi3 * 180.0 / Math.PI, 0, 0, x3);
+            gl.Rotate(phi3 * 180.0 / Math.PI, 0, 0, 1);
             DrawDiskXy(gl,_r32,_thickness31,_segments,0,0,0,DiskMarkerColor.Red,DiskMarkerDirection.NegativeX);
             gl.PopMatrix();
             // ---------------- Rolle 3.2 ----------------
             gl.PushMatrix();
             gl.Translate(x3,0, _z3);
-            gl.Rotate(phi3 * 180.0 / Math.PI, 0, 0, x3);
-            DrawDiskXy(gl,_r34,_thickness32,_segments,0,0,0,DiskMarkerColor.Blue,DiskMarkerDirection.PositiveX);
+            gl.Rotate(phi3 * 180.0 / Math.PI, 0, 0, 1);
+            DrawDiskXy(gl,_r34,_thickness32,_segments,0,0,_thickness31/2,DiskMarkerColor.Blue,DiskMarkerDirection.PositiveX);
             gl.PopMatrix();
             // ---------------- Rolle 4.1 ----------------
-            SetMaterial(gl, 1f, 0f, 0f);
+            SetMaterial(gl, 1f, 0f, 0f); 
             gl.PushMatrix();
             gl.Translate(x4, 0, _z3);
-            gl.Rotate(phi4 * 180.0 / Math.PI, 0, 0, x4);
-            DrawDiskXy(gl,_r43,_thickness41,_segments,0,0,0,DiskMarkerColor.Blue,DiskMarkerDirection.NegativeX);
+            gl.Rotate(phi4 * 180.0 / Math.PI, 0, 0, 1);
+            DrawDiskXy(gl,_r43,_thickness41,_segments,0,0,_thickness32/2,DiskMarkerColor.Blue,DiskMarkerDirection.NegativeX);
             gl.PopMatrix();
             // ---------------- Rolle 4.2 ----------------
             gl.PushMatrix();
             gl.Translate(x4, 0, _z45);
-            gl.Rotate(phi4 * 180.0 / Math.PI, 0, 0, x4);
-            DrawDiskXy(gl,_r45,_thickness42,_segments,0,0,0,DiskMarkerColor.Green,DiskMarkerDirection.PositiveX);
+            gl.Rotate(phi4 * 180.0 / Math.PI, 0, 0, 1);
+            DrawDiskXy(gl,_r45,_thickness42,_segments,0,0,_thickness41/2,DiskMarkerColor.Green,DiskMarkerDirection.PositiveX);
             gl.PopMatrix();
             // ---------------- Seil ----------------
             gl.Disable(OpenGL.GL_LIGHTING);
@@ -164,11 +183,12 @@ namespace Hubwerksgetriebe
             );
             #endregion
             
-            _rotation -= 0.5f;
-            _phi2 += 0.05; // rad pro Frame
+            _rotation -= -0.5f;
+            // _phi2 += 0.05; // rad pro Frame
         }
 
         // ================= Hilfsmethoden =================
+        // Visualisierung
         private void DrawDiskXy(OpenGL gl, double radius, double thickness, int segments, double cx, double cy, double cz, DiskMarkerColor markerColor, DiskMarkerDirection markerDirection)
         {
             double zFront = cz + thickness / 2.0;
@@ -339,6 +359,48 @@ namespace Hubwerksgetriebe
                 12,
                 "Z ⊙"
             );
+        }
+        // CSV 
+        private void LoadPhi2FromCsv(string filePath)
+        {
+            _phi2Sequence.Clear();
+            _phi2Index = 0;
+
+            foreach (var line in File.ReadLines(filePath))
+            {
+                // Leere Zeilen überspringen
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                // Header überspringen (falls vorhanden)
+                if (line.ToLower().Contains("phi"))
+                    continue;
+
+                // Dezimalpunkt unabhängig vom System
+                if (double.TryParse(
+                        line.Trim(),
+                        NumberStyles.Float,
+                        CultureInfo.InvariantCulture,
+                        out double value))
+                {
+                    _phi2Sequence.Add(value);
+                }
+            }
+
+            if (_phi2Sequence.Count == 0)
+                throw new InvalidOperationException("CSV enthält keine gültigen phi2-Werte.");
+        }
+        // Time Heartbeat
+        private void PhiTimer_Tick(object sender, EventArgs e)
+        {
+            if (_phi2Index >= _phi2Sequence.Count)
+            {
+                _phiTimer.Stop();   // Ende der Sequenz
+                return;
+            }
+
+            _phi2 = _phi2Sequence[_phi2Index];
+            _phi2Index++;
         }
     }
 }    
