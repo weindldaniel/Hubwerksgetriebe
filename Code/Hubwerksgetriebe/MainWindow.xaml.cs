@@ -54,7 +54,7 @@ namespace Hubwerksgetriebe
             InitializeComponent();
 
             // CSV laden
-            LoadPhi2FromCsv(@"Z:\_source\Repositorys\SSI_Hubwerksgetriebe\phi2.csv");
+            LoadPhi2FromCsv(@"Z:\_source\Repositorys\Hubwerksgetriebe\phi2.csv");
 
             // Timer starten
             _phiTimer = new DispatcherTimer();

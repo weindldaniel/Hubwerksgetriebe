@@ -43,7 +43,7 @@ namespace SFunctionContinuous
                 .OfType<RecordBlock>()
                 .First(b => b.Name == "Phi");
 
-            string filePath = @"Z:\_source\Repositorys\SSI_Hubwerksgetriebe\phi2.csv";
+            string filePath = @"Z:\_source\Repositorys\Hubwerksgetriebe\phi2.csv";
 
             CultureInfo culture = CultureInfo.InvariantCulture;
             StringBuilder sb = new StringBuilder();
