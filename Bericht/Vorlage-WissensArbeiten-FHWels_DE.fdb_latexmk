@@ -1,11 +1,11 @@
 # Fdb version 4
-["biber Vorlage-WissensArbeiten-FHWels_DE"] 1770308687.9099 "Vorlage-WissensArbeiten-FHWels_DE.bcf" "Vorlage-WissensArbeiten-FHWels_DE.bbl" "Vorlage-WissensArbeiten-FHWels_DE" 1770308720.70951 0
-  "Vorlage-WissensArbeiten-FHWels_DE.bcf" 1770308720.56707 100297 530fd3bd8171ddbb8cb868ff64cd9867 "pdflatex"
+["biber Vorlage-WissensArbeiten-FHWels_DE"] 1770308687.9099 "Vorlage-WissensArbeiten-FHWels_DE.bcf" "Vorlage-WissensArbeiten-FHWels_DE.bbl" "Vorlage-WissensArbeiten-FHWels_DE" 1770309506.47636 0
+  "Vorlage-WissensArbeiten-FHWels_DE.bcf" 1770309506.3392 100297 530fd3bd8171ddbb8cb868ff64cd9867 "pdflatex"
   (generated)
   "Vorlage-WissensArbeiten-FHWels_DE.bbl"
   "Vorlage-WissensArbeiten-FHWels_DE.blg"
   (rewritten before read)
-["pdflatex"] 1770308716.98851 "/Users/danielweindl/_source/Repositorys/Hubwerksgetriebe/Bericht/Vorlage-WissensArbeiten-FHWels_DE.tex" "Vorlage-WissensArbeiten-FHWels_DE.pdf" "Vorlage-WissensArbeiten-FHWels_DE" 1770308720.70985 0
+["pdflatex"] 1770309502.74721 "/Users/danielweindl/_source/Repositorys/Hubwerksgetriebe/Bericht/Vorlage-WissensArbeiten-FHWels_DE.tex" "Vorlage-WissensArbeiten-FHWels_DE.pdf" "Vorlage-WissensArbeiten-FHWels_DE" 1770309506.47666 0
   "/Users/danielweindl/_source/Repositorys/Hubwerksgetriebe/Bericht/Vorlage-WissensArbeiten-FHWels_DE.tex" 1770308024.13103 8104 f5c5b0d87d374ba784b209c032fbe0b8 ""
   "/Users/danielweindl/_source/Repositorys/SSI_Hubwerksgetriebe/Bericht/Grafik/1.2.2-Hubwerksgetriebe.png" 1770305252.26472 158123 f7b3c5a28a77bca9b556ad3a2898e722 ""
   "/Users/danielweindl/_source/Repositorys/SSI_Hubwerksgetriebe/Bericht/Grafik/HubwerkSFUnc.png" 1770305252.26648 232564 eb1ddf744b5d8fa03dc861c216c315d3 ""
@@ -313,13 +313,13 @@
   "Text/0301-Hauptkapitel02.tex" 1770308024.09332 2912 e83e743a43e3f4067a5777627dcad31d ""
   "Text/0301-Hauptkapitel03.tex" 1770308024.0945 5488 3bb4ce74f3359a1407aafb5f21d23df2 ""
   "Text/0301-Hauptkapitel04.tex" 1770308024.09558 858 5683842d37d5088880c645d2f7b701ab ""
-  "Text/0501-Zusammenfassung.tex" 1770308716.76096 768 71f66cd87fc78602331f8854daa2d34c ""
-  "Vorlage-WissensArbeiten-FHWels_DE.aux" 1770308720.55937 8712 98bcfd9494e34d1b587fbe667913d060 "pdflatex"
+  "Text/0501-Zusammenfassung.tex" 1770309502.47396 1668 ccfdb780defcfc4bf24295e8f6575d3c ""
+  "Vorlage-WissensArbeiten-FHWels_DE.aux" 1770309506.3323 8712 98bcfd9494e34d1b587fbe667913d060 "pdflatex"
   "Vorlage-WissensArbeiten-FHWels_DE.bbl" 1770308689.3553 466 76d65a242ec496c9b4361af646ff12cb "biber Vorlage-WissensArbeiten-FHWels_DE"
-  "Vorlage-WissensArbeiten-FHWels_DE.out" 1770308719.04847 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "Vorlage-WissensArbeiten-FHWels_DE.run.xml" 1770308720.56796 2704 03840317d8eece3425841f0721234bc7 "pdflatex"
+  "Vorlage-WissensArbeiten-FHWels_DE.out" 1770309504.87962 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "Vorlage-WissensArbeiten-FHWels_DE.run.xml" 1770309506.33995 2704 03840317d8eece3425841f0721234bc7 "pdflatex"
   "Vorlage-WissensArbeiten-FHWels_DE.tex" 1770308024.13103 8104 f5c5b0d87d374ba784b209c032fbe0b8 ""
-  "Vorlage-WissensArbeiten-FHWels_DE.toc" 1770308720.56805 1431 7d2f95e376987c9f78006f18afda0b57 "pdflatex"
+  "Vorlage-WissensArbeiten-FHWels_DE.toc" 1770309506.34003 1431 7d2f95e376987c9f78006f18afda0b57 "pdflatex"
   "packages/Bibliography/FHWelsISO690.bbx" 1765133291.609 21608 4b993610b12edda7946c1114f32d8e69 ""
   "packages/Bibliography/FHWelsISO690Numeric.bbx" 1765133291.61878 1289 bb21585089293d30cac5c37cba1d9aba ""
   "packages/Bibliography/FHWelsISO690Numeric.cbx" 1765133291.62101 7621 f0960a26b020d0467430aed51c37d707 ""
