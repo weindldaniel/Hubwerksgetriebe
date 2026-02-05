@@ -1,8 +1,8 @@
-PWD /Users/danielweindl/_source/Repositorys/SSI_Hubwerksgetriebe/Bericht
+PWD /Users/danielweindl/_source/Repositorys/Hubwerksgetriebe/Bericht
 INPUT /usr/local/texlive/2025/texmf.cnf
 INPUT /usr/local/texlive/2025/texmf-dist/web2c/texmf.cnf
 INPUT /usr/local/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt
-INPUT /Users/danielweindl/_source/Repositorys/SSI_Hubwerksgetriebe/Bericht/Vorlage-WissensArbeiten-FHWels_DE.tex
+INPUT /Users/danielweindl/_source/Repositorys/Hubwerksgetriebe/Bericht/Vorlage-WissensArbeiten-FHWels_DE.tex
 OUTPUT Vorlage-WissensArbeiten-FHWels_DE.log
 INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/koma-script/scrbook.cls
 INPUT /usr/local/texlive/2025/texmf-dist/tex/latex/koma-script/scrbook.cls

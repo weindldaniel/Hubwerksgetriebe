@@ -1,0 +1,9 @@
+[0] Config.pm:308> INFO - This is Biber 2.20
+[0] Config.pm:311> INFO - Logfile is 'Vorlage-WissensArbeiten-FHWels_DE.blg'
+[35] biber-darwin:340> INFO - === Thu Feb  5, 2026, 17:24:49
+[42] Biber.pm:420> INFO - Reading 'Vorlage-WissensArbeiten-FHWels_DE.bcf'
+[76] Biber.pm:994> INFO - Found 0 citekeys in bib section 0
+[83] bbl.pm:676> INFO - Writing 'Vorlage-WissensArbeiten-FHWels_DE.bbl' with encoding 'UTF-8'
+[84] bbl.pm:779> INFO - Output to Vorlage-WissensArbeiten-FHWels_DE.bbl
+[84] Biber.pm:131> WARN - The file 'Vorlage-WissensArbeiten-FHWels_DE.bcf' does not contain any citations!
+[84] Biber.pm:133> INFO - WARNINGS: 1
