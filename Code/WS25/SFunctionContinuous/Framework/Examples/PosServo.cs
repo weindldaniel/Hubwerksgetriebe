@@ -21,7 +21,7 @@ namespace SFunctionContinuous.Framework.Examples
             Block recordX = new RecordBlock("Strecke");
             Block recordV = new RecordBlock("Geschwindigkeit");
             Block recordA = new RecordBlock("Becshleunigung");
-
+            
             Model.AddBlock(constant);
             Model.AddBlock(gain1);
             Model.AddBlock(gain2);
@@ -31,12 +31,12 @@ namespace SFunctionContinuous.Framework.Examples
             Model.AddBlock(recordX);
             Model.AddBlock(recordV);
             Model.AddBlock(recordA);
-
+            
             Model.AddConnection(constant, 0, gain1, 0);
             Model.AddConnection(gain1, 0, sub, 0);
             Model.AddConnection(sub, 0, integrate1, 0);
             Model.AddConnection(integrate1, 0, integrate2, 0);
-
+            
             Model.AddConnection(integrate1, 0, gain2, 0);
             Model.AddConnection(gain2, 0, sub, 1);
 

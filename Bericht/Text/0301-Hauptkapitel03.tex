@@ -1,0 +1,158 @@
+\chapter{Implementierung der Regelung}
+\label{sec: Kapitel 2}
+
+\section{Umsetzung in Csharp}
+
+Die Bewegungsgleichung aus Gleichung (2.1) wird an dieser Stelle in einer SContinuousFunction umgesetzt. Hierzu wird das entsprechende Blockschaltbild nachgebildet, wie im nachfolgenden Code dargestellt.
+
+\begin{lstlisting}[style=csharpstyle]
+    public class Hubwerk : Example
+    {
+        public Hubwerk()
+        {
+            double _r2 = 2;
+            double _r32 = 5;
+            double _r34 = 2;
+            double _r43 = 4;
+            double _r45 = 2;
+            double m = 25;
+            double g = 9.81;
+            double jRed = 1.6;
+            double M2 = 50;
+            double a = (_r2 * _r34 * _r45) / (_r32 * _r43);
+            
+            Block constantM = new ConstantBlock("Constant", (M2/jRed));
+            Block constantC = new ConstantBlock("Constant", ((m*g*a)/jRed));
+            Block sub = new SubtractBlock("Sub");
+            Block integrate1 = new IntegrateBlock("Integrate1", 0);
+            Block integrate2 = new IntegrateBlock("Integrate2", 0);
+            Block recordphi = new RecordBlock("Phi");
+            Block recordphidot = new RecordBlock("Winkelgeschwindigkeit");
+            Block recordphidotdot = new RecordBlock("Winkelbeschleunigung");
+            
+            Model.AddBlock(constantM);
+            Model.AddBlock(constantC);
+            Model.AddBlock(sub);
+            Model.AddBlock(integrate1);
+            Model.AddBlock(integrate2);
+            Model.AddBlock(recordphi);
+            Model.AddBlock(recordphidot);
+            Model.AddBlock(recordphidotdot);
+            
+            Model.AddConnection(constantM, 0, sub, 0);
+            Model.AddConnection(constantC, 0, sub, 1);
+            Model.AddConnection(sub, 0, integrate1, 0);
+            Model.AddConnection(integrate1, 0, integrate2, 0);
+            Model.AddConnection(integrate2, 0, recordphi, 0);            
+            Model.AddConnection(integrate1, 0, recordphidot, 0);
+            Model.AddConnection(sub, 0, recordphidotdot, 0);
+        }
+    }
+\end{lstlisting}
+
+Wir lassen das Example Hubwerk builden:
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.80\textwidth]{/Users/danielweindl/_source/Repositorys/SSI_Hubwerksgetriebe/Bericht/Grafik/HubwerkSFUnc.png}
+	\caption{}
+\end{figure}
+
+\section{Extraktion von phi}
+Nach mehreren Tests wurde die Plausibilität der Modellbildung als bestätigt angesehen. Im nächsten Schritt soll die Liste der Variable phi in eine CSV-Datei exportiert werden.
+
+Den Code dafür binden wir direkt nach dem Solver ein.
+
+\begin{lstlisting}[style=csharpstyle]
+
+namespace SFunctionContinuous
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            // Modell erstellen und loesen
+
+            //Example example = new PosServo(); 
+            Example example = new Hubwerk();
+
+            try
+            {
+                Solver solution = new EulerExplicitSolver(example.Model);
+                solution.Solve(example.TimeStepMax, example.TimeMax);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+            // ================================
+            // CSV-EXPORT VON PHI (HIER!)
+            // ================================
+
+            RecordBlock phiBlock = example.Model.Blocks
+                .OfType<RecordBlock>()
+                .First(b => b.Name == "Phi");
+
+            string filePath = @"Z:\_source\Repositorys\SSI_Hubwerksgetriebe\phi2.csv";
+
+            CultureInfo culture = CultureInfo.InvariantCulture;
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("phi");
+
+            foreach ((_, double phi) in phiBlock.Data)
+            {
+                sb.AppendLine(phi.ToString(culture));
+            }
+
+            File.WriteAllText(filePath, sb.ToString());
+            
+            // Graph-Visualisierung erstellen
+
+            Graph graph = new Graph();
+
+            foreach (Block f in example.Model.Blocks)
+            {
+                graph.AddNode($"{f.GetHashCode()}").LabelText = f.ToString();
+            }
+            foreach (Connection c in example.Model.Connections)
+            {
+                graph.AddEdge($"{c.Source.GetHashCode()}", c.ToString(), $"{c.Target.GetHashCode()}");
+            }
+
+            Graph.Graph = graph;
+
+            // Chart-Visualisierung erstellen
+
+            foreach (Block f in example.Model.Blocks)
+            {
+                if (f is RecordBlock)
+                {
+                    RecordBlock r = (RecordBlock)f;
+
+                    double[] t = new double[r.Data.Count];
+                    double[] u = new double[r.Data.Count];
+
+                    for (int i = 0; i < r.Data.Count; i++)
+                    {
+                        (double ti, double tu) = r.Data[i];
+
+                        t[i] = ti;
+                        u[i] = tu;
+                    }
+
+                    Scatter scatter = Chart.Plot.Add.Scatter(t, u);
+
+                    scatter.LegendText = f.Name;
+                }
+            }
+        }
+    }
+}
+\end{lstlisting}
+
+Jetzt muss die Visualisierung nur noch auf die Liste zugreifen.

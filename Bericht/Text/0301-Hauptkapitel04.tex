@@ -1,0 +1,23 @@
+\chapter{Simulation des Gesamtsystems}
+\label{sec: Kapitel 2}
+
+ \section{CSV laden}
+Die CSV-Datei wird direkt im Konstruktor geladen. Ueber den phiTimer wird in einem Intervall von 0,1 s jeweils eine neue Zeile aus der CSV eingelesen. Auf diese Weise wird das zuvor simulierte Modell an dieser Stelle visualisiert.  
+ 
+\begin{lstlisting}[style=csharpstyle]
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            // CSV laden
+            LoadPhi2FromCsv(@"Z:\_source\Repositorys\SSI_Hubwerksgetriebe\phi2.csv");
+
+            // Timer starten
+            _phiTimer = new DispatcherTimer();
+            _phiTimer.Interval = TimeSpan.FromSeconds(0.1);
+            _phiTimer.Tick += PhiTimer_Tick;
+            _phiTimer.Start();
+        }
+ \end{lstlisting}
+
+ Ein Video der Visualisierung liegt dem Bericht bei.

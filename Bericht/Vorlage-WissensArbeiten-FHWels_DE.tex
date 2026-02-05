@@ -11,6 +11,38 @@
 \usepackage[english,ngerman,naustrian]{babel}
 \usepackage{./packages/WissensArbeitenFHWels}
 \usepackage{./packages/WissensArbeitenFHWels-FrontseitenDE}     
+
+% -------------------------------------------------
+% Listings – Quellcode
+% -------------------------------------------------
+\usepackage{listings}           % Darstellung von Code
+\usepackage{xcolor}             % Farben für Syntax-Highlighting
+
+\lstset{
+    inputencoding=utf8,
+    extendedchars=true           % Sonderzeichen im Code
+}
+
+\lstdefinestyle{csharpstyle}{
+    language=[Sharp]C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{teal},
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=8pt,
+    breaklines=true,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    frame=single,
+    tabsize=4,
+    captionpos=b,
+    inputencoding=utf8,
+    extendedchars=true
+}
+
 %%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%
 %%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -77,7 +109,7 @@
 % Syntax:	-) FHWelsNumericBrackets (z.B.: [1])
 %			-) FHWelsAlphabeticBrackets (z.B. [Meier, 2011])
 \addbibresource{Bibliography.bib}	% Bibliography - Datei(en)
-\graphicspath{{./Grafik/}}	% Festlegung des Unterordners für Abbildungen
+\graphicspath{/Users/danielweindl/_source/Repositorys/SSI_Hubwerksgetriebe/Bericht/Grafik}	% Festlegung des Unterordners für Abbildungen
 \TabContent{1.4cm}			% Tabulatoreinrückung für das Inhaltsverzeichnis	
 %%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%
@@ -128,13 +160,15 @@
 	\input{Text/0101-Einleitung}
 %%----------------------------------------------------------------------------
 %% Hauptkapitel 1
-	\input{Text/0201-Hauptkapitel01}
-%%----------------------------------------------------------------------------
-%% Hauptkapitel 2
 	\input{Text/0301-Hauptkapitel02}
 %%----------------------------------------------------------------------------
+%% Hauptkapitel 2
+	\input{Text/0201-Hauptkapitel01}
+	\input{Text/0301-Hauptkapitel03}
+	\input{Text/0301-Hauptkapitel04}
+%%----------------------------------------------------------------------------
 %% Zusammenfassung
-% 	\input{Text/0501-Zusammenfassung}
+ 	\input{Text/0501-Zusammenfassung}
 % %%----------------------------------------------------------------------------
 % %% Abkürzungsverzeichnis[optional]
 % 	\clearpage

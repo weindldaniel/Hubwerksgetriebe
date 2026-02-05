@@ -1,2 +1,110 @@
-\chapter{Kapitel 2}
+\chapter{Modellbildung}
 \label{sec: Kapitel 2}
+
+\section{Berechnung der Bewegungsgleichung}
+Die kinetische Energie des Hubwerksgetriebes schreibt sich als
+\[
+T
+= \frac{1}{2} J_2 \dot{\varphi}_2^{\,2}
++ \frac{1}{2} J_3 \dot{\varphi}_3^{\,2}
++ \frac{1}{2} J_4 \dot{\varphi}_4^{\,2}
++ \frac{1}{2} m_5 \dot{y}_5^{\,2}
+\]
+
+Aus der Forderung, dass die überstrichenen Bogenlängen beim Abwälzvorgang
+für beide involvierten Körper gleich sind, ergibt sich
+\[
+\varphi_2 r_2 = - \varphi_3 r_{32}
+\;\Rightarrow\;
+\varphi_3 = - \varphi_2 \frac{r_2}{r_{32}}
+\]
+
+\[
+\varphi_3 r_{34} = - \varphi_4 r_{43}
+\;\Rightarrow\;
+\varphi_4 = \varphi_2 \frac{r_2}{r_{32}} \frac{r_{34}}{r_{43}}
+\]
+
+\[
+y_{55} = \varphi_4 r_{45} - l_0
+\;\Rightarrow\;
+y_{55} = \varphi_2 \frac{r_2}{r_{32}} \frac{r_{34}}{r_{43}} r_{45} - l_0
+\]
+
+Das Einsetzen des Quadrates der zeitlichen Ableitungen in die kinetische
+Energie liefert das reduzierte Massenträgheitsmoment \( J_{\text{red}} \).
+
+\[
+T
+= \frac{1}{2} \dot{\varphi}_2^{\,2}
+\left(
+J_2
++ J_3 \left( \frac{r_2}{r_{32}} \right)^2
++ J_4 \left( \frac{r_2 r_{34}}{r_{32} r_{43}} \right)^2
++ m_5 \left( \frac{r_2 r_{34} r_{45}}{r_{32} r_{43}} \right)^2
+\right)
+= \frac{1}{2} \dot{\varphi}_2^{\,2} J_{\text{red}}
+\]
+
+Die potentielle Energie ergibt sich zu
+\[
+V
+= m_5 g
+\left(
+\varphi_2 \frac{r_2 r_{34} r_{45}}{r_{32} r_{43}}
+\right)
+\]
+
+und unter Anwendung der Lagrange-Gleichung ergibt sich mit dem
+Antriebsmoment \( M_2 \) die Bewegungsgleichung
+\[
+J_{\text{red}} \ddot{\varphi}_2
++ m_5 g \frac{r_2 r_{34} r_{45}}{r_{32} r_{43}}
+= M_2
+\]
+
+Simulink arbeitet am einfachsten mit expliziten Integrationsketten:
+\[
+\ddot{\varphi}_2
+= \frac{1}{J_{\mathrm{red}}}
+\left(
+M_2
+- m_5 g \frac{r_2 r_{34} r_{45}}{r_{32} r_{43}}
+\right)
+\]
+
+\section{Blockschaltbild}
+\begin{center}
+\begin{tikzpicture}[
+    >=stealth,
+    block/.style={draw, rectangle, minimum width=2.6cm, minimum height=1.2cm, align=center},
+    sum/.style={draw, circle, minimum size=1.2cm},
+    int/.style={draw, rectangle, minimum width=1.2cm, minimum height=1.2cm}
+]
+
+% Knoten
+\node[sum]   (sum)  at (0,0) {};
+\node[block] (gain) at (3.2,0) {$\dfrac{1}{J_{\mathrm{red}}}$};
+\node[int]   (int1) at (6.2,0) {$\displaystyle \int$};
+\node[int]   (int2) at (8.6,0) {$\displaystyle \int$};
+
+% Beschriftungen Summationsknoten
+\node at (-0.2,0.35) {$+$};
+\node at (-0.2,-0.35) {$-$};
+
+% Eingänge
+\draw[->] (-2.2,0.6) node[left] {$M_2$} -- (sum.west |- 0,0.6);
+\draw[->] (-2.2,-0.6) node[left] {$C_g$} -- (sum.west |- 0,-0.6);
+
+% Hauptpfad
+\draw[->] (sum) -- (gain);
+\draw[->] (gain) -- (int1);
+\draw[->] (int1) -- (int2);
+\draw[->] (int2) -- (10.2,0) node[right] {$\varphi_2$};
+
+% Abzweig auf Winkelgeschwindigkeit
+\draw[->] (int1.south) |- (6.2,-1.8) -- (10.2,-1.8) node[right] {$\dot{\varphi}_2$};
+
+\end{tikzpicture}
+\end{center}
+
