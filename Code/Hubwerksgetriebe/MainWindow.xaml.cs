@@ -126,13 +126,10 @@ namespace Hubwerksgetriebe
             // X & Z Positionen
             double x3 = _r2 + _r32;
             double x4 = _r2 + _r32 + _r34 + _r43 ;
-            // müssen noch berechnet werden für parametrischen aufbau
-            double z3;
-            double z45;
             // Winkel
             double phi3 = -_phi2 * (_r2 / _r32);
             double phi4 = _phi2 * ((_r2 * _r34) / (_r32 * _r43));
-            // Rope 
+            // Rope
             double ropeDisplacement = _r45 * phi4;   // s = r * φ
             double ropeY = _ropeBaseY + ropeDisplacement;
             double ropeZ = _z45 + _thickness42 / 2.0; // vordere Stirnfläch
@@ -145,7 +142,7 @@ namespace Hubwerksgetriebe
             gl.LoadIdentity();
             
             // Kamera ausrichtung
-            gl.Translate(-5, 5, -50);
+            gl.Translate(-5, 5, -30);
             gl.Rotate(30, 1, 0, 0);         
             gl.Rotate(-20, 0, 1, 0);
             DrawFadenkreuz(gl);
@@ -161,7 +158,6 @@ namespace Hubwerksgetriebe
             gl.Translate(_x2, 0, 0);
             gl.Rotate(_phi2 * 180.0 / Math.PI, 0, 0, 1);
             DrawDiskXy(gl,_r2,_thickness2,_segments,0,0,0,DiskMarkerColor.Red,DiskMarkerDirection.PositiveX);
-            //drawer.DrawDiskXy(gl, _r2, _thickness2, _segments, 0, 0, 0, DiskMarkerColor Red, DiskMarkerDirection.PositiveX);
             gl.PopMatrix();
             // ---------------- Rolle 3.1 ----------------
             SetMaterial(gl, 0f, 1f, 0f);
@@ -200,8 +196,7 @@ namespace Hubwerksgetriebe
             gl.Enable(OpenGL.GL_LIGHTING);
             // ---------------- Punktmasse ----------------
             SetMaterial(gl, 0, 0, 0);
-            DrawSphere(gl, 0.5, 30, 30, x4+_r45, ropeY - 0.4, ropeZ
-            );
+            DrawSphere(gl, 0.5, 30, 30, x4+_r45, ropeY - 0.4, ropeZ);
             #endregion
             
             _rotation -= -0.5f;

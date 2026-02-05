@@ -1,3 +1,42 @@
 \chapter{Visualisierung}
 \label{sec: Kapitel 1}
 
+Das Hubwerksgetriebe soll so wie in der Aufgabenstellung abgebildet werden.
+
+\section{Erstellung der Rollen}
+
+Jede Rolle wird nach folgedenm Muster aufgebaut.
+Den größten Teil des Codes haben wir in die Hilfsmethode "DraxDiskXy ausgelagert.
+\begin{lstlisting}[style=csharpstyle]
+    SetMaterial(gl, 0f, 0f, 0.5f);
+    gl.PushMatrix();
+    gl.Translate(_x2, 0, 0);
+    gl.Rotate(_phi2 * 180.0 / Math.PI, 0, 0, 1);
+    DrawDiskXy(gl,_r2,_thickness2,_segments,0,0,0,DiskMarkerColor.Red,DiskMarkerDirection.PositiveX);
+    gl.PopMatrix();  
+\end{lstlisting}
+
+\section{Erstellung von Seil und Punktmaße}
+Die Erstellung der Punktmaße wurde auch in eine Hilfsmethode ausgelagert.
+\begin{lstlisting}[style=csharpstyle]
+    // ---------------- Seil ----------------
+    gl.Disable(OpenGL.GL_LIGHTING);
+    gl.Color(0, 0, 0);
+    gl.LineWidth(3.0f);
+    gl.Begin(OpenGL.GL_LINES);
+    gl.Vertex(x4+_r45, 0, ropeZ);   // Austritt an der Rolle
+    gl.Vertex(x4+_r45, ropeY, ropeZ);       // bewegte Masse
+    gl.End();
+    gl.Enable(OpenGL.GL_LIGHTING);
+    // ---------------- Punktmasse ----------------
+    SetMaterial(gl, 0, 0, 0);
+    DrawSphere(gl, 0.5, 30, 30, x4+_r45, ropeY - 0.4, ropeZ);
+\end{lstlisting}
+
+\section{Ergebnis}
+Die Markierungen auf den Rollen lassen gut nachvollziehen dass die Rotationen richtig übertragen werden.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.80\textwidth]{/Users/danielweindl/_source/Repositorys/SSI_Hubwerksgetriebe/Bericht/Grafik/Visu.png}
+	\caption{Ergebnis}
+\end{figure}

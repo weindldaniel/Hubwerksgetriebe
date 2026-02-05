@@ -11,6 +11,38 @@
 \usepackage[english,ngerman,naustrian]{babel}
 \usepackage{./packages/WissensArbeitenFHWels}
 \usepackage{./packages/WissensArbeitenFHWels-FrontseitenDE}     
+
+% -------------------------------------------------
+% Listings – Quellcode
+% -------------------------------------------------
+\usepackage{listings}           % Darstellung von Code
+\usepackage{xcolor}             % Farben für Syntax-Highlighting
+
+\lstset{
+    inputencoding=utf8,
+    extendedchars=true           % Sonderzeichen im Code
+}
+
+\lstdefinestyle{csharpstyle}{
+    language=[Sharp]C,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{teal},
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=8pt,
+    breaklines=true,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    frame=single,
+    tabsize=4,
+    captionpos=b,
+    inputencoding=utf8,
+    extendedchars=true
+}
+
 %%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%
 %%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
