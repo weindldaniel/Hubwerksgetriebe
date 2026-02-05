@@ -76,9 +76,7 @@ namespace Hubwerksgetriebe
             NegativeX
         }
         
-        private void OpenGLControl_OpenGLInitialized(
-            object sender,
-            SharpGL.WPF.OpenGLRoutedEventArgs args)
+        private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.WPF.OpenGLRoutedEventArgs args)
         {
             OpenGL gl = args.OpenGL;
 
@@ -147,7 +145,7 @@ namespace Hubwerksgetriebe
             gl.LoadIdentity();
             
             // Kamera ausrichtung
-            gl.Translate(-5, 5, -30);
+            gl.Translate(-5, 5, -50);
             gl.Rotate(30, 1, 0, 0);         
             gl.Rotate(-20, 0, 1, 0);
             DrawFadenkreuz(gl);

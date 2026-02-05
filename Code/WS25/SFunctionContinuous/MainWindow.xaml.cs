@@ -5,6 +5,10 @@ using SFunctionContinuous.Framework.Blocks;
 using SFunctionContinuous.Framework.Examples;
 using SFunctionContinuous.Framework.Solvers;
 using System.Windows;
+using System.Globalization;
+using System.IO;
+using System.Text;
+using System.Linq;
 
 namespace SFunctionContinuous
 {
@@ -19,19 +23,40 @@ namespace SFunctionContinuous
 
             // Modell erstellen und lösen
 
-            Example example = new PosServo();
+            //Example example = new PosServo(); 
+            Example example = new Hubwerk();
 
             try
             {
                 Solver solution = new EulerExplicitSolver(example.Model);
-
                 solution.Solve(example.TimeStepMax, example.TimeMax);
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message);
             }
+            // ================================
+            // CSV-EXPORT VON PHI (HIER!)
+            // ================================
 
+            RecordBlock phiBlock = example.Model.Blocks
+                .OfType<RecordBlock>()
+                .First(b => b.Name == "Phi");
+
+            string filePath = @"Z:\_source\Repositorys\SSI_Hubwerksgetriebe\phi2.csv";
+
+            CultureInfo culture = CultureInfo.InvariantCulture;
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("phi");
+
+            foreach ((_, double phi) in phiBlock.Data)
+            {
+                sb.AppendLine(phi.ToString(culture));
+            }
+
+            File.WriteAllText(filePath, sb.ToString());
+            
             // Graph-Visualisierung erstellen
 
             Graph graph = new Graph();
