@@ -76,27 +76,50 @@ namespace Hubwerksgetriebe
             NegativeX
         }
         
-        private void OpenGLControl_OpenGLInitialized(object sender, SharpGL.WPF.OpenGLRoutedEventArgs args)
+        private void OpenGLControl_OpenGLInitialized(
+            object sender,
+            SharpGL.WPF.OpenGLRoutedEventArgs args)
         {
             OpenGL gl = args.OpenGL;
 
-            gl.ClearColor(1, 1, 1, 1);
+            // Hintergrund
+            gl.ClearColor(1f, 1f, 1f, 1f);
 
+            // Tiefentest
             gl.Enable(OpenGL.GL_DEPTH_TEST);
+            gl.DepthFunc(OpenGL.GL_LEQUAL);
+
+            // Beleuchtung
             gl.Enable(OpenGL.GL_LIGHTING);
             gl.Enable(OpenGL.GL_LIGHT0);
+
+            // Normalen
             gl.Enable(OpenGL.GL_NORMALIZE);
 
-            float[] ambient = { 0.2f, 0.2f, 0.2f, 1 };
-            gl.LightModel(OpenGL.GL_LIGHT_MODEL_AMBIENT, ambient);
+            // ===== WICHTIG: stabiles Beleuchtungsmodell =====
 
-            float[] diffuse = { 1, 1, 1, 1 };
-            float[] specular = { 1, 1, 1, 1 };
-            float[] position = { 3, 4, 6, 1 };
+            // Globales Umgebungslicht (leicht!)
+            float[] globalAmbient = { 0.25f, 0.25f, 0.25f, 1f };
+            gl.LightModel(OpenGL.GL_LIGHT_MODEL_AMBIENT, globalAmbient);
 
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE, diffuse);
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, specular);
-            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, position);
+            // Local Viewer → verhindert springende Speculars
+            gl.LightModel(OpenGL.GL_LIGHT_MODEL_LOCAL_VIEWER, OpenGL.GL_TRUE);
+
+            // Nur Vorderseiten beleuchten (sehr wichtig!)
+            gl.LightModel(OpenGL.GL_LIGHT_MODEL_TWO_SIDE, OpenGL.GL_FALSE);
+
+            // ===== Lichtquelle =====
+
+            float[] lightPosition = { 5f, 8f, 10f, 1f };   // weiter weg, stabil
+            float[] lightDiffuse  = { 0.8f, 0.8f, 0.8f, 1f };
+            float[] lightSpecular = { 0.3f, 0.3f, 0.3f, 1f }; // stark reduziert
+
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_POSITION, lightPosition);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_DIFFUSE,  lightDiffuse);
+            gl.Light(OpenGL.GL_LIGHT0, OpenGL.GL_SPECULAR, lightSpecular);
+
+            // Glatte Schattierung
+            gl.ShadeModel(OpenGL.GL_SMOOTH);
         }
         
         private void OpenGLControl_OpenGLDraw(object sender, SharpGL.WPF.OpenGLRoutedEventArgs args)
@@ -125,8 +148,8 @@ namespace Hubwerksgetriebe
             
             // Kamera ausrichtung
             gl.Translate(-5, 5, -30);
-            gl.Rotate(20, 1, 0, 0);
-            // gl.Rotate(-40, 0, 1, 0);
+            gl.Rotate(30, 1, 0, 0);         
+            gl.Rotate(-20, 0, 1, 0);
             DrawFadenkreuz(gl);
             // gl.Rotate(_rotation, 0, 1, 0);
             gl.Enable(OpenGL.GL_LIGHTING);
@@ -306,8 +329,8 @@ namespace Hubwerksgetriebe
         {
             float[] amb = { 0.2f, 0.2f, 0.2f, 1 };
             float[] diff = { r, g, b, 1 };
-            float[] spec = { 1, 1, 1, 1 };
-            float[] shin = { 50 };
+            float[] spec = { 0.3f, 0.3f, 0.3f, 1f };
+            float[] shin = { 20f };
 
             gl.Material(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_AMBIENT, amb);
             gl.Material(OpenGL.GL_FRONT_AND_BACK, OpenGL.GL_DIFFUSE, diff);
